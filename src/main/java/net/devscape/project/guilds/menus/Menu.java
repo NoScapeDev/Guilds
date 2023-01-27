@@ -10,6 +10,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
+import static net.devscape.project.guilds.util.Message.format;
+
 public abstract class Menu implements InventoryHolder {
 
     protected Inventory inventory;
@@ -40,7 +42,15 @@ public abstract class Menu implements InventoryHolder {
     public Inventory getInventory() {
         return this.inventory;
     }
-    
+
+    public void fillEmpty() {
+        for (int slot = 0; slot < this.inventory.getSize(); ++slot) {
+            if (this.inventory.getItem(slot) == null) {
+                this.inventory.setItem(slot, this.makeItem(Material.GRAY_STAINED_GLASS_PANE, format("&8"), new String[0]));
+            }
+        }
+    }
+
     public ItemStack makeItem(final Material material, final String displayName, final String... lore) {
         final ItemStack item = new ItemStack(material);
         final ItemMeta itemMeta = item.getItemMeta();

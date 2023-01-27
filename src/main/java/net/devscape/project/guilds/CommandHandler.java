@@ -1,19 +1,7 @@
 package net.devscape.project.guilds;
 
-import net.devscape.project.guilds.commands.InvitePlayer;
-import net.devscape.project.guilds.commands.GoToWarp;
-import net.devscape.project.guilds.commands.DisbandGuild;
-import net.devscape.project.guilds.commands.CreateGuild;
-import net.devscape.project.guilds.commands.DenyInvite;
-import net.devscape.project.guilds.commands.AcceptInvite;
-import net.devscape.project.guilds.commands.GetGuildInfo;
-import net.devscape.project.guilds.commands.SetDescription;
-import net.devscape.project.guilds.commands.SetWarp;
-import net.devscape.project.guilds.commands.Upgrade;
-import net.devscape.project.guilds.commands.Confirmation;
-import net.devscape.project.guilds.commands.Chat;
-import net.devscape.project.guilds.commands.LeaveGuild;
-import net.devscape.project.guilds.commands.ListGuilds;
+import net.devscape.project.guilds.commands.*;
+
 import java.util.Optional;
 import net.devscape.project.guilds.util.InputChecker;
 import net.devscape.project.guilds.menus.pages.GuildMenu;
@@ -84,6 +72,9 @@ public class CommandHandler implements CommandExecutor
         }
         else if (args[0].equalsIgnoreCase("list")) {
             new ListGuilds(this.plugin, sender, args);
+        }
+        else if (args[0].equalsIgnoreCase("reload")) {
+            new Reload(this.plugin, sender, args);
         }
         else if (args[0].equalsIgnoreCase("setdesc")) {
             this.guildSetDesc(sender, args, label);
@@ -160,6 +151,10 @@ public class CommandHandler implements CommandExecutor
         else {
             Message.sendPlaceholder(this.plugin, sender, "syntax.setdesc", label);
         }
+    }
+
+    private void guildReload(final CommandSender sender, final String[] args, final String label) {
+        new Reload(this.plugin, sender, args);
     }
     
     private void guildInfo(final CommandSender sender, final String[] args, final String label) {

@@ -33,6 +33,17 @@ public final class Guilds extends JavaPlugin implements Listener {
     private static final HashMap<Player, MenuUtil> menuUtilMap;
     
     public void onEnable() {
+
+        init();
+
+    }
+    
+    public void onDisable() {
+        this.data.saveAllData();
+        this.getLogger().log(Level.INFO, "Plugin disabled!");
+    }
+
+    public void init() {
         (Guilds.instance = this).saveDefaultConfig();
         boolean dbEnabled;
         if (Objects.requireNonNull(this.getConfig().getString("storage-type")).equalsIgnoreCase("db")) {
@@ -56,11 +67,6 @@ public final class Guilds extends JavaPlugin implements Listener {
         }
         this.cache = new DatabaseCache();
         this.getLogger().log(Level.INFO, "Plugin enabled!");
-    }
-    
-    public void onDisable() {
-        this.data.saveAllData();
-        this.getLogger().log(Level.INFO, "Plugin disabled!");
     }
     
     @EventHandler

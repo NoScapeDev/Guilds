@@ -88,6 +88,7 @@ messages:
     confirm: "&cUsage: /%placeholder% confirm"
     upgrade: "&cUsage: /%placeholder% upgrade"
     chat: "&cUsage: /%placeholder% chat <message>"
+    reload: "&cUsage: /%placeholder% reload"
 
 # command help message.
 help:
@@ -101,5 +102,6 @@ help:
   line-7: "&a/%placeholder% accept <guild> &7- Accept an invite"
   line-8: "&a/%placeholder% leave &7- Leave your guild"
   line-9: "&a/%placeholder% list &7- List the top guilds"
+  line-10: "&a/%placeholder% reload &7- Reload all configs/data for guilds"
 
 

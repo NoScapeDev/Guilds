@@ -54,19 +54,20 @@ public class GuildMenu extends Menu {
     
     @Override
     public void setMenuItems() {
-        this.inventory.setItem(10, this.makeItem(Material.NETHER_STAR, format("&2&lLeader: &f" + Bukkit.getOfflinePlayer(this.menuUtil.getGuild().getOwner()).getName()), new String[0]));
+        this.inventory.setItem(10, this.makeItem(Material.NETHER_STAR, format("&2&lLeader: &f" + Bukkit.getOfflinePlayer(this.menuUtil.getGuild().getOwner()).getName())));
         final StringBuilder string = new StringBuilder();
         for (final UUID member : this.menuUtil.getGuild().getMembers().keySet()) {
             string.append(Bukkit.getOfflinePlayer(member).getName()).append(" ");
         }
         this.inventory.setItem(12, this.makeItem(Material.PLAYER_HEAD, format("&2&lMembers &7(Right-Click)")));
-        this.inventory.setItem(14, this.makeItem(Material.PLAYER_HEAD, format("&2&lSize: &f" + this.menuUtil.getGuild().getMembers().size() + "/" + this.menuUtil.getGuild().getMaxMembers()), new String[0]));
+        this.inventory.setItem(14, this.makeItem(Material.PLAYER_HEAD, format("&2&lSize: &f" + this.menuUtil.getGuild().getMembers().size() + "/" + this.menuUtil.getGuild().getMaxMembers())));
         final List<String> whatAreGuilds = new ArrayList<String>();
         whatAreGuilds.add("&7Guilds is a grouping system allowing");
         whatAreGuilds.add("&7you to team up with other players and");
         whatAreGuilds.add("&7level up to be come the best!");
         this.inventory.setItem(17, this.makeItem(Material.BOOK, format("&2&lWhat is guilds?"), format(whatAreGuilds)));
-        final List<String> guildCommands = new ArrayList<String>();
+
+        final List<String> guildCommands = new ArrayList<>();
         guildCommands.add("&a/guilds create <name> &7- Create a new guild");
         guildCommands.add("&a/guilds disband &7- Disband/Delete your guild");
         guildCommands.add("&a/guilds upgrade &7- Upgrade/level up your guild");
@@ -77,22 +78,32 @@ public class GuildMenu extends Menu {
         guildCommands.add("&a/guilds leave &7- Leave your guild");
         guildCommands.add("&a/guilds list &7- List the top guilds");
         this.inventory.setItem(35, this.makeItem(Material.OAK_SIGN, format("&2&lGuild Commands:"), format(guildCommands)));
-        this.inventory.setItem(16, this.makeItem(Material.WHITE_STAINED_GLASS_PANE, format("&f"), new String[0]));
-        this.inventory.setItem(25, this.makeItem(Material.WHITE_STAINED_GLASS_PANE, format("&f"), new String[0]));
-        this.inventory.setItem(34, this.makeItem(Material.WHITE_STAINED_GLASS_PANE, format("&f"), new String[0]));
+
+        this.inventory.setItem(16, this.makeItem(Material.WHITE_STAINED_GLASS_PANE, format("&f")));
+        this.inventory.setItem(25, this.makeItem(Material.WHITE_STAINED_GLASS_PANE, format("&f")));
+        this.inventory.setItem(34, this.makeItem(Material.WHITE_STAINED_GLASS_PANE, format("&f")));
+
         int online = 0;
         for (final UUID member2 : this.menuUtil.getGuild().getMembers().keySet()) {
             if (Bukkit.getPlayer(member2) != null) {
                 ++online;
             }
         }
-        this.inventory.setItem(28, this.makeItem(Material.GREEN_DYE, format("&2&lOnline: &f" + online + "/" + this.menuUtil.getGuild().getMembers().size()), new String[0]));
-        this.inventory.setItem(30, this.makeItem(Material.FEATHER, format("&2&lDescription: &f" + this.menuUtil.getGuild().getDescription()), new String[0]));
-        this.inventory.setItem(32, this.makeItem(Material.EXPERIENCE_BOTTLE, format("&2&lLevel: &f" + this.menuUtil.getGuild().getLevel() + "/" + this.menuUtil.getGuild().getMaxLevel()), new String[0]));
-        for (int slot = 0; slot < this.inventory.getSize(); ++slot) {
-            if (this.inventory.getItem(slot) == null) {
-                this.inventory.setItem(slot, this.makeItem(Material.GRAY_STAINED_GLASS_PANE, format("&8"), new String[0]));
-            }
-        }
+
+        this.inventory.setItem(28, this.makeItem(Material.GREEN_DYE, format("&2&lOnline: &f" + online + "/" + this.menuUtil.getGuild().getMembers().size())));
+        this.inventory.setItem(30, this.makeItem(Material.FEATHER, format("&2&lDescription: &f" + this.menuUtil.getGuild().getDescription())));
+
+        final int level = menuUtil.getGuild().getLevel() + 1;
+        final int upgradeCost = Guilds.getInstance().getConfig().getInt("settings.upgrade-costs.level-" + level);
+
+        final List<String> guildUpgrade = new ArrayList<>();
+        guildUpgrade.add("&7Next Level: &a" + level);
+        guildUpgrade.add("&7Upgrade Cost: &a$" + upgradeCost);
+        guildUpgrade.add("&7");
+        guildUpgrade.add("&2/guild upgrade");
+
+        this.inventory.setItem(32, this.makeItem(Material.EXPERIENCE_BOTTLE, format("&2&lLevel: &f" + this.menuUtil.getGuild().getLevel() + "/" + this.menuUtil.getGuild().getMaxLevel()), format(guildUpgrade)));
+
+        fillEmpty();
     }
 }
