@@ -17,33 +17,33 @@ public class InvitePlayer extends SubCommand {
         this.execute();
     }
     
-    private boolean execute() {
+    private void execute() {
         final Player player = (Player)this.getSender();
         final Player player2 = Bukkit.getPlayer(this.getArgs()[1]);
         final Optional<Guild> guild = this.getPlugin().getData().getGuild(player.getUniqueId());
         if (!guild.isPresent()) {
             Message.send(this.getPlugin(), this.getSender(), "must-be-owner");
-            return false;
+            return;
         }
         if (player2 == null) {
             Message.sendPlaceholder(this.getPlugin(), this.getSender(), "player-not-found", this.getArgs()[1]);
-            return false;
+            return;
         }
         if (player.getName().equalsIgnoreCase(this.getArgs()[1])) {
             Message.send(this.getPlugin(), this.getSender(), "self-invite-error");
-            return false;
+            return;
         }
         if (guild.get().getMembers().get(player.getUniqueId()) != Role.LEADER) {
             Message.send(this.getPlugin(), this.getSender(), "must-be-owner");
-            return false;
+            return;
         }
         if (guild.get().getMembers().containsKey(player2.getUniqueId())) {
             Message.sendPlaceholder(this.getPlugin(), this.getSender(), "player-already-in-guild", player2.getName());
-            return false;
+            return;
         }
-        this.getPlugin().getData().saveInvite(player2.getUniqueId(), guild.get().getName());
+
+        this.getPlugin().getCache().addInvite(player2, guild.get().getName());
         Message.sendPlaceholder(this.getPlugin(), this.getSender(), "invite-send", player2.getName());
         Message.sendPlaceholder(this.getPlugin(), player2, "invite-receive", guild.get().getName());
-        return true;
     }
 }

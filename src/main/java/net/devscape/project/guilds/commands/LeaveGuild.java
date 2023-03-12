@@ -15,22 +15,23 @@ public class LeaveGuild extends SubCommand {
         this.execute();
     }
     
-    private boolean execute() {
+    private void execute() {
         if (!(this.getSender() instanceof Player)) {
-            return false;
+            return;
         }
         final Player player = (Player)this.getSender();
         final Optional<Guild> guild = this.getPlugin().getData().getGuild(player.getUniqueId());
         if (!guild.isPresent()) {
             Message.send(this.getPlugin(), this.getSender(), "not-in-guild");
-            return false;
+            return;
         }
+
         if (guild.get().isOwner(player.getUniqueId())) {
             Message.send(this.getPlugin(), this.getSender(), "leave-guild-owner");
-            return false;
+            return;
         }
+
         guild.get().removeMember(player.getUniqueId());
         Message.sendPlaceholder(this.getPlugin(), this.getSender(), "leave-guild", guild.get().getName());
-        return true;
     }
 }

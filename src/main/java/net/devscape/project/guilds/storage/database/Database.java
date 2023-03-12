@@ -60,7 +60,6 @@ public class Database implements ManageData {
         this.createGuildTable();
         this.createPlayerTable();
         this.createWarpsTable();
-        this.createInvitesTable();
         return true;
     }
     
@@ -405,9 +404,10 @@ public class Database implements ManageData {
     
     @Override
     public boolean hasInvite(final UUID playerId, final String guildId) {
-        final String sql = "SELECT EXISTS(SELECT * FROM " + this.inviteTable + " WHERE player_id = ? AND guild_id = ?";
-        try (final Connection conn = this.connect();
-             final PreparedStatement stat = conn.prepareStatement(sql)) {
+        final String sql = "SELECT * FROM " + this.inviteTable + " WHERE player_id = ? AND guild_id = ?";
+        try {
+            final Connection conn = this.connect();
+            final PreparedStatement stat = conn.prepareStatement(sql);
             stat.setString(1, playerId.toString());
             stat.setString(2, guildId);
             stat.execute();
@@ -415,8 +415,7 @@ public class Database implements ManageData {
             if (rs.next()) {
                 return rs.getBoolean(1);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -537,18 +536,6 @@ public class Database implements ManageData {
         }
     }
     
-    private void createInvitesTable() throws SQLException {
-        final String sql = "CREATE TABLE IF NOT EXISTS " + this.inviteTable + "(player_id VARCHAR(64) NOT NULL, INDEX player_ind (player_id), FOREIGN KEY (player_id) REFERENCES " + this.playerTable + "(id) ON DELETE CASCADE, guild_id VARCHAR(64) NOT NULL UNIQUE, INDEX guild_ind (guild_id), FOREIGN KEY (guild_id) REFERENCES " + this.guildTable + "(id) ON DELETE CASCADE ON UPDATE CASCADE)";
-        try (final Connection conn = this.connect();
-             final PreparedStatement stat = conn.prepareStatement(sql)) {
-            stat.execute();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            throw new SQLException("Could not create invites table");
-        }
-    }
-    
     @Override
     public boolean saveInvite(final UUID playerId, final String guildId) {
         if (this.rowExists(this.inviteTable, playerId.toString(), guildId)) {
@@ -559,50 +546,47 @@ public class Database implements ManageData {
     
     private boolean updateInvite(final String playerId, final String guildId) {
         final String sql = "UPDATE " + this.inviteTable + " WHERE player_id = ? AND guild_id = ?";
-        try (final Connection conn = this.connect();
-             final PreparedStatement stat = conn.prepareStatement(sql)) {
+        try {
+            final Connection conn = this.connect();
+            final PreparedStatement stat = conn.prepareStatement(sql);
             stat.setString(1, playerId);
             stat.setString(2, guildId);
             stat.execute();
             return true;
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
     
     private boolean insertInvite(final String playerId, final String guildId) {
-        final String sql = "INSERT INTO " + this.inviteTable + " VALUES (?, ?)";
-        try (final Connection conn = this.connect();
-             final PreparedStatement stat = conn.prepareStatement(sql)) {
+        final String sql = "INSERT INTO " + this.inviteTable + " VALUES (?,?)";
+        try {
+            final Connection conn = this.connect();
+            final PreparedStatement stat = conn.prepareStatement(sql);
             stat.setString(1, playerId);
             stat.setString(2, guildId);
             stat.execute();
             return true;
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
     
     @Override
     public boolean deleteInvite(final UUID playerId, final String guildId) {
         final String sql = "DELETE FROM " + this.inviteTable + " WHERE player_id = ? AND guild_id = ?";
-        try (final Connection conn = this.connect();
-             final PreparedStatement stat = this.connect().prepareStatement(sql)) {
+        try {
+            final Connection conn = this.connect();
+            final PreparedStatement stat = conn.prepareStatement(sql);
             stat.setString(1, playerId.toString());
             stat.setString(2, guildId);
             stat.execute();
             return true;
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public boolean deleteWarp(final String guildId, final String warpId) {
         return false;
@@ -610,12 +594,12 @@ public class Database implements ManageData {
     
     private boolean dropTable(final String name) throws SQLException {
         final String sql = "DROP TABLE " + name;
-        try (final Connection conn = this.connect();
-             final PreparedStatement stat = conn.prepareStatement(sql)) {
+        try {
+            final Connection conn = this.connect();
+            final PreparedStatement stat = conn.prepareStatement(sql);
             stat.execute();
             return true;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             throw new SQLException("Could not drop table: " + name);
         }

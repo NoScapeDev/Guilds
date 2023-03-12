@@ -9,7 +9,6 @@ description: Amazing guild rich-feature plugin.
 commands:
   guilds:
     description: Command for guilds.
-    usage: ""
     aliases:
       - guild
       - guilds
