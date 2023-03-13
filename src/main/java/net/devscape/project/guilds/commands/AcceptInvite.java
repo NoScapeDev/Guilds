@@ -18,34 +18,39 @@ public class AcceptInvite extends SubCommand {
         super(plugin, sender, args);
         this.execute();
     }
-    
+
     private void execute() {
         Player player2 = (Player) this.getSender();
         String guildName = this.getArgs()[1];
 
-        boolean noGuild = this.getPlugin().getData().getGuild(player2.getUniqueId()).isPresent();
+        boolean hasGuild = this.getPlugin().getData().getGuild(player2.getUniqueId()).isPresent();
+
+        if (hasGuild) {
+            Message.sendPlaceholder(this.getPlugin(), this.getSender(), "already-in-guild", guildName);
+            return;
+        }
+
+        final Optional<Guild> guild = this.getPlugin().getData().getGuild(guildName);
+        final boolean guildExists = guild.isPresent();
+        if (!guildExists) {
+            player2.sendMessage(guildName + " does not exist!");
+            return;
+        }
 
         boolean invited = this.getPlugin().getCache().hasBeenInvited(player2);
 
         String g = this.getPlugin().getCache().getGuildInvited(player2);
 
-        if (invited && g.equalsIgnoreCase(guildName)) {
-            final Optional<Guild> guild = this.getPlugin().getData().getGuild(guildName);
-            final boolean guildExists = guild.isPresent();
-            if (guildExists && noGuild) {
-                this.getPlugin().getData().savePlayer(new GPlayer(player2.getUniqueId(), guildName, Role.MEMBER));
-                Message.sendPlaceholder(this.getPlugin(), this.getSender(), "invite-accepted", guild.get().getName());
-                this.getPlugin().getCache().removeInvite(player2, guildName);
-                if (Bukkit.getPlayer(guild.get().getOwner()) != null) {
-                    Message.sendPlaceholder(this.getPlugin(), Objects.requireNonNull(Bukkit.getPlayer(guild.get().getOwner())), "player-joined-guild", player2.getName());
-                }
-            } else if (!guildExists) {
-                player2.sendMessage(guildName + " does not exist anymore!");
-            } else {
-                Message.send(this.getPlugin(), this.getSender(), "already-in-guild");
-            }
-        } else {
+        if (!invited && !g.equalsIgnoreCase(guildName)) {
             Message.sendPlaceholder(this.getPlugin(), this.getSender(), "no-invite", guildName);
+            return;
+        }
+
+        this.getPlugin().getData().savePlayer(new GPlayer(player2.getUniqueId(), guildName, Role.MEMBER));
+        Message.sendPlaceholder(this.getPlugin(), this.getSender(), "invite-accepted", guild.get().getName());
+        this.getPlugin().getCache().removeInvite(player2, guildName);
+        if (Bukkit.getPlayer(guild.get().getOwner()) != null) {
+            Message.sendPlaceholder(this.getPlugin(), Objects.requireNonNull(Bukkit.getPlayer(guild.get().getOwner())), "player-joined-guild", player2.getName());
         }
     }
 }

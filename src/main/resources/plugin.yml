@@ -11,5 +11,4 @@ commands:
     description: Command for guilds.
     aliases:
       - guild
-      - guilds
       - g
